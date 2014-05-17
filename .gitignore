@@ -1,3 +1,4 @@
-.idea/
+/.idea/
+/app/cache/
 /cache/
 /config/development/

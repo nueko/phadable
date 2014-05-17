@@ -10,12 +10,13 @@ abstract class Base
      */
     protected $request;
     protected $searchFormat = '%search%';
-    protected $paging;
+    protected $bindFormat = ':bind:';
+    protected $paging = ['offset' => 0, 'number' => 0];
     protected $ordering = [];
     protected $bound = [];
     protected $criteria = [];
-    protected $search = ['global' => NULL, 'column' => NULL];
-    protected $cols = [];
+    protected $search = ['global' => [], 'column' => []];
+    public  $cols = [];
     private $format = [];
     protected $render = [
         "draw"            => 0,
@@ -97,8 +98,8 @@ abstract class Base
                 $colKey = array_search($columns[$i]['data'], array_keys($this->cols));
 
                 if ($columns[$i]['searchable'] == 'true') {
-                    $this->bound              = ["search" => $this->getSearchFormat($search['value'])];
-                    $this->search['global'][] = $this->cols[$colKey] . ' LIKE ' . ":search:";
+                    $this->bound              = ["search" => $this->searchFormat($search['value'])];
+                    $this->search['global'][] = $this->cols[$colKey] . ' LIKE ' . $this->bindFormat("search");
                 }
             }
         }
@@ -109,15 +110,15 @@ abstract class Base
 
             $str = $columns[$i]['search']['value'];
             if ($columns[$i]['searchable'] == 'true' && $str != '') {
-                $this->bound              = ["search_$i" => $this->getSearchFormat($str)];
-                $this->search['column'][] = $this->cols[$colKey] . ' LIKE ' . ":search_$i:";
+                $this->bound              = ["search_$i" => $this->searchFormat($str)];
+                $this->search['column'][] = $this->cols[$colKey] . ' LIKE ' . $this->bindFormat("search_$i");
             }
         }
 
         return $this;
     }
 
-    protected function getSearchFormat($value = '')
+    private function searchFormat($value = '')
     {
         if (! $value)
             return $this->searchFormat;
@@ -125,11 +126,43 @@ abstract class Base
         return str_replace('search', $value, $this->searchFormat);
     }
 
-    protected function setSearchFormat($format = '%search%')
+    public function setSearchFormat($format = '%search%')
     {
         $this->searchFormat = $format;
-
         return $this;
+    }
+
+    private function bindFormat($value)
+    {
+        return str_replace('bind', $value, $this->bindFormat);
+    }
+
+    public function setBindFormat($format = ':bind:')
+    {
+        $this->bindFormat = $format;
+        return $this;
+    }
+
+    public function detect()
+    {
+        return ($this->request->has('draw') && $this->request->isAjax());
+    }
+
+    public function getColumns()
+    {
+        $columns = [];
+        foreach ($this->cols as $i => $col) {
+            if(is_numeric($i))
+                $columns[] = $col;
+            else
+                $columns[] = $i;
+        }
+        return $columns;
+    }
+
+    public function getRealColumns()
+    {
+        return $this->cols;
     }
 
 } 

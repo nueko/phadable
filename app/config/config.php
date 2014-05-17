@@ -4,8 +4,8 @@ return new \Phalcon\Config(array(
     'database'    => array(
         'adapter'  => 'Mysql',
         'host'     => 'localhost',
-        'username' => 'root',
-        'password' => 'm45ter',
+        'username' => 'user',
+        'password' => '123',
         'dbname'   => 'datatables',
         'options'  => [
             PDO::ATTR_CASE => PDO::CASE_LOWER,

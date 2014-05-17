@@ -23,5 +23,15 @@ class ModelizeController extends \Phalcon\Mvc\Controller
         }
     }
 
+    public function pdoAction()
+    {
+        $this->view->disable();
+        $sql = "select first_name, last_name, office, position, date_Format(start_date,'%d/%m/%Y') as start, salary/10 as salary from employees where office <> 'Tokyo'";
+        $datatables = new \DataTables\Pdo($this->getDI());
+        $data = $datatables->query($sql);
+        $this->response->setJsonContent($data->make())->send();
+
+    }
+
 }
 

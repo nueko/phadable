@@ -27,7 +27,7 @@ try {
     echo $application->handle()->getContent();
 
 } catch (PDOException $e) {
-    echo $e->getMessage() .PHP_EOL;
+    var_dump($e->getTrace());
 } catch (\Exception $e) {
     echo $e->getMessage();
 }

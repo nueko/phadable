@@ -18,6 +18,7 @@
             "processing": true,
             "serverSide": true,
             "ajax": {
+                url: 'modelize/pdo',
                 type: "GET"
             }
             /*"columns": [
